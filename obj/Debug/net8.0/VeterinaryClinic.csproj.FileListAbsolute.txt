@@ -1,0 +1,14 @@
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/bin/Debug/net8.0/VeterinaryClinic
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/bin/Debug/net8.0/VeterinaryClinic.deps.json
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/bin/Debug/net8.0/VeterinaryClinic.runtimeconfig.json
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/bin/Debug/net8.0/VeterinaryClinic.dll
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/bin/Debug/net8.0/VeterinaryClinic.pdb
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.GeneratedMSBuildEditorConfig.editorconfig
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.AssemblyInfoInputs.cache
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.AssemblyInfo.cs
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.csproj.CoreCompileInputs.cache
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.dll
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/refint/VeterinaryClinic.dll
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.pdb
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.genruntimeconfig.cache
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/ref/VeterinaryClinic.dll
