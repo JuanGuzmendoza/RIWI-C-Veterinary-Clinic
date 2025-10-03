@@ -12,3 +12,4 @@
 /home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.pdb
 /home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.genruntimeconfig.cache
 /home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/ref/VeterinaryClinic.dll
+/home/Coder/Escritorio/Guzman/VeterinaryClinic/obj/Debug/net8.0/VeterinaryClinic.sourcelink.json

@@ -10,11 +10,15 @@ namespace VeterinaryClinic.Services
             Console.WriteLine("--- Register New Patient ---");
             string name = Validations.ValidateContent("Enter patient's name: ");
             int age = Validations.ValidateNumber("Enter patient's age: ");
-            string symptom = Validations.ValidateContent("Enter patient's symptom: ");
 
-            Patient newPatient = new Patient(name, age, symptom);
+            Patient newPatient = new Patient(name, age);
+
+            List<Pet> newPets=PetService.RegisterPet(newPatient);
+
+            newPatient.Pets = newPets;
+
             list.Add(newPatient);
-            Console.WriteLine("Patient registered successfully!\n");
+           
         }
 
         public static void ListPatients(List<Patient> list)
@@ -22,7 +26,14 @@ namespace VeterinaryClinic.Services
             Console.WriteLine("--- Patient List ---");
             foreach (var patient in list)
             {
-                Console.WriteLine($"Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}, Symptom: {patient.Symptom}");
+                Console.WriteLine($"Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}");
+                if (patient.Pets != null)
+                {
+                    foreach (var pet in patient.Pets)
+                    {
+                        Console.WriteLine($"Pet -> Name: {pet.Name}, Species: {pet.Species}, Breed: {pet.Breed}, Color: {pet.Color}");
+                    }
+                }
             }
             Console.WriteLine();
         }
@@ -32,7 +43,13 @@ namespace VeterinaryClinic.Services
             var patient = list.Find(p => p.Name != null && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (patient != null)
             {
-                Console.WriteLine($"Found: Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}, Symptom: {patient.Symptom}\n");
+                Console.WriteLine($"Found: Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}");
+
+                foreach (var pet in patient.Pets)
+                {
+                    Console.WriteLine($"Pet -> Name: {pet.Name}, Species: {pet.Species}, Breed: {pet.Breed}, Color: {pet.Color}");
+                }
+                Console.WriteLine();
             }
             else
             {
