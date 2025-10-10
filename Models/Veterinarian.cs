@@ -1,6 +1,6 @@
 namespace VeterinaryClinic.Models
 {
-    using VeterinaryClinic.interfaces;
+    using VeterinaryClinic.Interfaces;
     using System;
     using System.Collections.Generic;
 

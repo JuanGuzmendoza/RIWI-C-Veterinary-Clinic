@@ -1,5 +1,5 @@
 
-namespace VeterinaryClinic.Repositories
+namespace VeterinaryClinic.Interfaces
 {
     public interface IRepository<T>
     {

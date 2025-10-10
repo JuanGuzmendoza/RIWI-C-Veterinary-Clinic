@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using VeterinaryClinic.Models;
-
+using  VeterinaryClinic.Interfaces;
 namespace VeterinaryClinic.Repositories
 {
     public class CustomerRepository : IRepository<Customer>   

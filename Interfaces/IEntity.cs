@@ -1,4 +1,4 @@
-namespace VeterinaryClinic.interfaces;
+namespace VeterinaryClinic.Interfaces;
 
 /// <summary>
 /// Interface that defines an entity with a unique identifier in the HealthClinic system.

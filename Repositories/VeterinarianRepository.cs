@@ -1,13 +1,14 @@
 using System.Text;
 using System.Text.Json;
 using VeterinaryClinic.Models;
-using VeterinaryClinic.Interfaces;
+using  VeterinaryClinic.Interfaces;
+
 namespace VeterinaryClinic.Repositories
 {
-    public class PetRepository : IRepository<Pet>
+    public class VeterinarianRepository : IRepository<Veterinarian>
     {
+        private readonly string baseUrl = "https://crud1-ab551-default-rtdb.firebaseio.com/Veterinarians";
         private readonly HttpClient client = new HttpClient();
-        private readonly string baseUrl = "https://crud1-ab551-default-rtdb.firebaseio.com/pets";
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
@@ -16,12 +17,13 @@ namespace VeterinaryClinic.Repositories
             WriteIndented = false,
         };
 
-        public async Task<string> CrearAsync(Pet pet)
+        // CREATE
+        public async Task<string> CrearAsync(Veterinarian vet)
         {
-            var json = JsonSerializer.Serialize(pet, _jsonOptions);
+            var json = JsonSerializer.Serialize(vet, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await client.PutAsync($"{baseUrl}/{pet.Id}.json", content);
+            var response = await client.PutAsync($"{baseUrl}/{vet.Id}.json", content);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadAsStringAsync();
@@ -30,37 +32,41 @@ namespace VeterinaryClinic.Repositories
             if (doc.RootElement.TryGetProperty("name", out var nameProp))
             {
                 string id = nameProp.GetString();
-                Console.WriteLine($"✅ Mascota creada con ID: {id}");
+                Console.WriteLine($"✅ Veterinarian created with ID: {id}");
                 return id;
-            }   
+            }
 
             return null;
         }
 
-        public async Task<Dictionary<string, Pet>> ObtenerTodosAsync()
+        // READ ALL
+        public async Task<Dictionary<string, Veterinarian>> ObtenerTodosAsync()
         {
             var response = await client.GetAsync($"{baseUrl}.json");
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<Dictionary<string, Pet>>(json, _jsonOptions);
+            return JsonSerializer.Deserialize<Dictionary<string, Veterinarian>>(json, _jsonOptions);
         }
 
-        public async Task<Pet> ObtenerPorIdAsync(string id)
+        // READ BY ID
+        public async Task<Veterinarian> ObtenerPorIdAsync(string id)
         {
             var response = await client.GetAsync($"{baseUrl}/{id}.json");
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<Pet>(json, _jsonOptions);
+            return JsonSerializer.Deserialize<Veterinarian>(json, _jsonOptions);
         }
 
-        public async Task ActualizarAsync(string id, Pet pet)
+        // UPDATE
+        public async Task ActualizarAsync(string id, Veterinarian vet)
         {
-            var json = JsonSerializer.Serialize(pet, _jsonOptions);
+            var json = JsonSerializer.Serialize(vet, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await client.PutAsync($"{baseUrl}/{id}.json", content);
         }
 
+        // DELETE
         public async Task EliminarAsync(string id)
         {
             await client.DeleteAsync($"{baseUrl}/{id}.json");
