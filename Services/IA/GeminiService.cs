@@ -16,26 +16,17 @@ public static class GeminiService
 
     public static async Task<SelectedVetResult> SelectVeterinarianAsync(string symptoms, Dictionary<string, Veterinarian> vets)
     {
-        Console.WriteLine("🤖 Consultando Gemini para seleccionar veterinario...");
-
-        // 🧾 Listado de veterinarios con su especialización
         var vetList = string.Join(", ", vets.Values.Select(v => $"{v.Id}:{v.Name}-{v.Specialization}"));
 
-        // 🧠 Prompt con formato forzado a JSON puro
         var prompt = $@"
 Tengo los siguientes veterinarios: {vetList}.
 Basado en los síntomas del paciente: ""{symptoms}"",
-elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE así (sin texto adicional ni explicación fuera del JSON):
+elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE así:
 {{
   ""selectedVeterinarianId"": ""id_del_veterinario"",
   ""reason"": ""explicación breve de por qué lo elegiste""
 }}";
 
-        Console.WriteLine("\n[DEBUG] 📤 PROMPT ENVIADO A GEMINI:");
-        Console.WriteLine(prompt);
-        Console.WriteLine("-------------------------------------------------------------");
-
-        // 🔧 Construcción del body para Gemini
         var requestBody = new
         {
             contents = new[]
@@ -58,16 +49,11 @@ elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE a
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"❌ Error de Gemini API: {response.StatusCode} - {error}");
+            throw new Exception($"Error de Gemini API: {response.StatusCode} - {error}");
         }
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
-        Console.WriteLine("\n[DEBUG] 📩 RESPUESTA CRUDA DE GEMINI (JSON COMPLETO):");
-        Console.WriteLine(jsonResponse);
-        Console.WriteLine("-------------------------------------------------------------");
-
-        // 🧩 Extraer el texto principal del JSON
         using var doc = JsonDocument.Parse(jsonResponse);
         var text = doc.RootElement
             .GetProperty("candidates")[0]
@@ -76,19 +62,10 @@ elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE a
             .GetProperty("text")
             .GetString();
 
-        Console.WriteLine("\n[DEBUG] 🧾 TEXTO EXTRAÍDO DEL JSON (ANTES DE LIMPIAR):");
-        Console.WriteLine(text);
-        Console.WriteLine("-------------------------------------------------------------");
-
-        // 🧹 Limpiar posibles etiquetas de markdown
-        text = text
+        text = text?
             .Replace("```json", "")
             .Replace("```", "")
             .Trim();
-
-        Console.WriteLine("\n[DEBUG] 🧼 TEXTO LIMPIO PARA DESERIALIZAR:");
-        Console.WriteLine(text);
-        Console.WriteLine("-------------------------------------------------------------");
 
         SelectedVetResult? result = null;
 
@@ -98,24 +75,12 @@ elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE a
             {
                 PropertyNameCaseInsensitive = true
             });
-
-            if (result == null || result.SelectedVeterinarianId == Guid.Empty)
-            {
-                Console.WriteLine("⚠️ El ID del veterinario devuelto está vacío o inválido.");
-            }
-            else
-            {
-                Console.WriteLine($"✅ Veterinario seleccionado: {result.SelectedVeterinarianId}");
-                Console.WriteLine($"📝 Motivo: {result.Reason}");
-            }
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"⚠️ Error al deserializar respuesta de Gemini: {ex.Message}");
-            Console.WriteLine($"Respuesta recibida: {text}");
+            // En caso de error, devolvemos un resultado vacío
         }
 
-        // ✅ Retornar resultado seguro
         return result ?? new SelectedVetResult
         {
             SelectedVeterinarianId = Guid.Empty,

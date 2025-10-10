@@ -124,5 +124,48 @@ var newVet = new Veterinarian(name, age, address, phone, specialization)
             await _repository.EliminarAsync(id);
             Console.WriteLine("🗑️ Veterinarian deleted successfully!");
         }
+        // ✅ SHOW ALL CONSULTATIONS ASSIGNED TO A VETERINARIAN
+public static async Task ShowConsultationsAsync(Guid vetGuid   )
+{
+    Console.WriteLine("--- 🧾 Show Veterinarian's Consultations ---\n");
+
+    var vet = await _repository.ObtenerPorIdAsync(vetGuid.ToString());
+
+    if (vet == null)
+    {
+        Console.WriteLine("❌ Veterinarian not found.");
+        Console.ReadKey();
+        return;
+    }
+
+    // Repositorio de consultas
+    var consultRepo = new ConsultationRepository();
+    var allConsultations = await consultRepo.ObtenerTodosAsync();
+
+    // Buscar las consultas de este veterinario
+    var vetConsultations = allConsultations.Values
+        .Where(c => c.VeterinarianId == vet.Id)
+        .ToList();
+
+    Console.WriteLine($"\n👨‍⚕️ Veterinarian: {vet.Name} ({vet.Specialization})");
+    Console.WriteLine($"📋 Total Consultations: {vetConsultations.Count}\n");
+
+    if (vetConsultations.Count == 0)
+    {
+        Console.WriteLine("No consultations assigned to this veterinarian.");
+    }
+    else
+    {
+        foreach (var c in vetConsultations)
+        {
+            Consultation.ShowInformation(c);
+            Console.WriteLine(new string('-', 40));
+        }
+    }
+
+    Console.WriteLine("\nPress any key to return to the menu...");
+    Console.ReadKey();
+}
+
     }
 }
