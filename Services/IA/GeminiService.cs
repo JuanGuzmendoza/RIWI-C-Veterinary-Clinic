@@ -9,31 +9,33 @@ using VeterinaryClinic.Models;
 
 public static class GeminiService
 {
-    // ✅ Clave fundida directamente
     private static readonly string _apiKey = "AIzaSyCNZZPfPm3AgVYQyb_CNFWGmzuCO532DM8";
-
     private static readonly HttpClient _client = new();
     private static readonly string _baseUrl =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-    /// <summary>
-    /// Selecciona un veterinario basado en los síntomas del paciente.
-    /// </summary>
     public static async Task<SelectedVetResult> SelectVeterinarianAsync(string symptoms, Dictionary<string, Veterinarian> vets)
     {
         Console.WriteLine("🤖 Consultando Gemini para seleccionar veterinario...");
 
+        // 🧾 Listado de veterinarios con su especialización
         var vetList = string.Join(", ", vets.Values.Select(v => $"{v.Id}:{v.Name}-{v.Specialization}"));
 
+        // 🧠 Prompt con formato forzado a JSON puro
         var prompt = $@"
 Tengo los siguientes veterinarios: {vetList}.
 Basado en los síntomas del paciente: ""{symptoms}"",
-elige el veterinario más adecuado y responde SOLO en formato JSON con esta estructura:
+elige el veterinario más adecuado y responde SOLO en formato JSON EXACTAMENTE así (sin texto adicional ni explicación fuera del JSON):
 {{
   ""selectedVeterinarianId"": ""id_del_veterinario"",
   ""reason"": ""explicación breve de por qué lo elegiste""
 }}";
 
+        Console.WriteLine("\n[DEBUG] 📤 PROMPT ENVIADO A GEMINI:");
+        Console.WriteLine(prompt);
+        Console.WriteLine("-------------------------------------------------------------");
+
+        // 🔧 Construcción del body para Gemini
         var requestBody = new
         {
             contents = new[]
@@ -61,6 +63,11 @@ elige el veterinario más adecuado y responde SOLO en formato JSON con esta estr
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
+        Console.WriteLine("\n[DEBUG] 📩 RESPUESTA CRUDA DE GEMINI (JSON COMPLETO):");
+        Console.WriteLine(jsonResponse);
+        Console.WriteLine("-------------------------------------------------------------");
+
+        // 🧩 Extraer el texto principal del JSON
         using var doc = JsonDocument.Parse(jsonResponse);
         var text = doc.RootElement
             .GetProperty("candidates")[0]
@@ -69,20 +76,38 @@ elige el veterinario más adecuado y responde SOLO en formato JSON con esta estr
             .GetProperty("text")
             .GetString();
 
-        // 🧹 Limpiar posibles backticks o etiquetas Markdown que envía Gemini
+        Console.WriteLine("\n[DEBUG] 🧾 TEXTO EXTRAÍDO DEL JSON (ANTES DE LIMPIAR):");
+        Console.WriteLine(text);
+        Console.WriteLine("-------------------------------------------------------------");
+
+        // 🧹 Limpiar posibles etiquetas de markdown
         text = text
             .Replace("```json", "")
             .Replace("```", "")
             .Trim();
 
-        // 🧩 Intentar deserializar el JSON limpio
+        Console.WriteLine("\n[DEBUG] 🧼 TEXTO LIMPIO PARA DESERIALIZAR:");
+        Console.WriteLine(text);
+        Console.WriteLine("-------------------------------------------------------------");
+
         SelectedVetResult? result = null;
+
         try
         {
             result = JsonSerializer.Deserialize<SelectedVetResult>(text, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
+
+            if (result == null || result.SelectedVeterinarianId == Guid.Empty)
+            {
+                Console.WriteLine("⚠️ El ID del veterinario devuelto está vacío o inválido.");
+            }
+            else
+            {
+                Console.WriteLine($"✅ Veterinario seleccionado: {result.SelectedVeterinarianId}");
+                Console.WriteLine($"📝 Motivo: {result.Reason}");
+            }
         }
         catch (Exception ex)
         {
@@ -90,7 +115,7 @@ elige el veterinario más adecuado y responde SOLO en formato JSON con esta estr
             Console.WriteLine($"Respuesta recibida: {text}");
         }
 
-        // ✅ Retornar resultado seguro con Guid.Empty si no se logró parsear
+        // ✅ Retornar resultado seguro
         return result ?? new SelectedVetResult
         {
             SelectedVeterinarianId = Guid.Empty,

@@ -7,7 +7,7 @@ namespace VeterinaryClinic.Models
     public class Veterinarian : Person, IEntity
     {
         public string Specialization { get; set; }
-        public List<Guid> ConsultationIds { get; set; }
+        public List<Guid> ConsultationIds { get; set; } = new();
 
         // Constructor
         public Veterinarian(string name, int age, string address , string phone , string specialization)

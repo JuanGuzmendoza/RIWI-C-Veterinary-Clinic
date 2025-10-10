@@ -1,6 +1,6 @@
 using VeterinaryClinic.Models;
 using VeterinaryClinic.Services;
-
+using VeterinaryClinic.Data;
 namespace VeterinaryClinic.Menus
 {
     public static class CustomerMenu
@@ -11,6 +11,7 @@ namespace VeterinaryClinic.Menus
 
             while (!exit)
             {
+                await DataInitializer.InitializeAsync();
                 Console.Clear();
                 Console.WriteLine($"🐶 Welcome {user.Name}!");
                 Console.WriteLine("========= Customer Menu =========");

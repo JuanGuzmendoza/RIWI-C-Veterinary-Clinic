@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using VeterinaryClinic.Services;
-
+using VeterinaryClinic.Data;
 namespace VeterinaryClinic.Menus
 {
     public static class AdminMenu
@@ -18,6 +18,7 @@ namespace VeterinaryClinic.Menus
             bool exit = false;
             while (!exit)
             {
+                await DataInitializer.InitializeAsync();
                 Console.WriteLine("\nSelect an option:");
                 Console.WriteLine("1️⃣  Manage Customers");
                 Console.WriteLine("2️⃣  Manage Pets");
@@ -59,6 +60,7 @@ namespace VeterinaryClinic.Menus
             bool back = false;
             while (!back)
             {
+                await DataInitializer.InitializeAsync();
                 Console.Clear();
                 Console.WriteLine("\n📋 CUSTOMER MANAGEMENT");
                 Console.WriteLine("1️⃣ List customers");
@@ -85,6 +87,7 @@ namespace VeterinaryClinic.Menus
             bool back = false;
             while (!back)
             {
+                await DataInitializer.InitializeAsync();
                 Console.Clear();
                 Console.WriteLine("\n🐶 PET MANAGEMENT");
                 Console.WriteLine("1️⃣ List pets");
@@ -111,6 +114,7 @@ namespace VeterinaryClinic.Menus
             bool back = false;
             while (!back)
             {
+                await DataInitializer.InitializeAsync();
                 Console.Clear();
                 Console.WriteLine("\n🩺 VETERINARIAN MANAGEMENT");
                 Console.WriteLine("1️⃣ List veterinarians");
@@ -137,6 +141,7 @@ namespace VeterinaryClinic.Menus
             bool back = false;
             while (!back)
             {
+                await DataInitializer.InitializeAsync();
                 Console.Clear();
                 Console.WriteLine("\n👤 USER MANAGEMENT");
                 Console.WriteLine("1️⃣ List users");

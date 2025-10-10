@@ -9,7 +9,7 @@ namespace VeterinaryClinic.Services
         private static readonly VeterinarianRepository _repository = new();
 
         // ✅ CREATE VETERINARIAN
- public static async Task<Guid> RegisterAsync()
+public static async Task<Guid> RegisterAsync()
 {
     Console.WriteLine("--- 🩺 Register New Veterinarian ---");
 
@@ -19,9 +19,14 @@ namespace VeterinaryClinic.Services
     string phone = Validations.ValidateContent("Enter veterinarian's phone: ");
     string specialization = Validations.ValidateContent("Enter veterinarian's specialization: ");
 
-    Veterinarian newVet = new(name, age, address, phone, specialization);
-    newVet.ConsultationIds = new List<Guid>();
+    // ✅ Crear veterinario con lista de consultas vacía
+var newVet = new Veterinarian(name, age, address, phone, specialization)
+{
+    ConsultationIds = new List<Guid> { Guid.Empty } // 👈 se guarda con un valor placeholder
+};
 
+
+    // 🔥 Guardar en Firebase
     string generatedId = await _repository.CrearAsync(newVet);
 
     Console.ForegroundColor = ConsoleColor.Green;
@@ -31,8 +36,9 @@ namespace VeterinaryClinic.Services
     Console.WriteLine($"💼 Specialization: {newVet.Specialization}");
     Console.ResetColor();
 
-    return newVet.Id; // 👈 devuelve el GUID
+    return newVet.Id; // 👈 Devuelve el GUID del veterinario recién creado
 }
+
 
         // ✅ READ ALL VETERINARIANS
         public static async Task ListAsync()
