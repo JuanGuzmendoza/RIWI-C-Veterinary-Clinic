@@ -1,13 +1,16 @@
 using Helpers;
 using VeterinaryClinic.Models;
+using VeterinaryClinic.Repositories;
 
 namespace VeterinaryClinic.Services
 {
     public static class PetService
     {
-        public static List<Pet> RegisterPet(Patient patient)
+
+        private static readonly PetRepository _repository = new PetRepository();
+        public static List<Guid> RegisterPet(Guid patientId)
         {
-            List<Pet> pets = new List<Pet>();
+            List<Guid> petIds = new List<Guid>();
             bool addMore = true;
             while (addMore)
             {
@@ -17,8 +20,12 @@ namespace VeterinaryClinic.Services
                 string breed = Validations.ValidateContent("Enter pet's breed: ");
                 string color = Validations.ValidateContent("Enter pet's color: ");
 
-                Pet newPet = new Pet(name, species, breed, color, patient);
-                pets.Add(newPet);
+
+                // Create pet with OwnerId set to the patient's Id
+                Pet newPet = new Pet(name, species, breed, color, patientId);
+
+                _repository.CrearAsync(newPet).Wait();
+                petIds.Add(newPet.Id);
                 Console.WriteLine("Pet registered successfully!\n");
 
                 string more = Validations.ValidateContent("Do you want to add another pet? (y/n): ");
@@ -27,7 +34,7 @@ namespace VeterinaryClinic.Services
                     addMore = false;
                 }
             }
-            return pets;
+            return petIds;
         }
 
         public static void ListPets(List<Pet> pets)

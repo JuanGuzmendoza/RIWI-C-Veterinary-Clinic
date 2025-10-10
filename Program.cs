@@ -25,7 +25,7 @@ class Program
                     break;
                 case "2":
                     Console.Clear();
-                    await PatientService.ListPatientsAsync();
+                    // await PatientService.ListPatientsAsync();
                     break;
                 case "3":
                     Console.Clear();

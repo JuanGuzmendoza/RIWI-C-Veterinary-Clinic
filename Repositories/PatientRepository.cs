@@ -1,48 +1,74 @@
-// using VeterinaryClinic.Models;
-// using VeterinaryClinic.Data;
+using System.Text;
+using System.Text.Json;
+using VeterinaryClinic.Models;
 
-// namespace VeterinaryClinic.Repositories
-// {
-//     public class PatientRepository
-//     {
-//         // Agregar un nuevo paciente
-//         public void Add(Patient patient)
-//         {
-//             DataStore.Patients.Add(patient);
-//         }
+namespace VeterinaryClinic.Repositories
+{
+    public class PatientRepository : IRepository<Patient>   
+    {
+        private readonly string baseUrl = "https://crud1-ab551-default-rtdb.firebaseio.com/patients";
+        private readonly HttpClient client = new HttpClient();
 
-//         // Obtener todos los pacientes
-//         public List<Patient> GetAll()
-//         {
-//             return DataStore.Patients;
-//         }
+private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+{
+    Converters = { new GuidToStringConverter() },
 
-//         // Obtener un paciente por ID
-//         public Patient? GetById(Guid id)
-//         {
-//             return DataStore.Patients.FirstOrDefault(p => p.Id == id);
-//         }
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = false,
+};
 
-//         // Eliminar un paciente por ID
-//         public bool Delete(Guid id)
-//         {
-//             var patient = GetById(id);
-//             if (patient == null) return false;
+public async Task<string> CrearAsync(Patient patient)
+{
+    var json = JsonSerializer.Serialize(patient, _jsonOptions);
+    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-//             return DataStore.Patients.Remove(patient);
-//         }
+    var response = await client.PutAsync($"{baseUrl}/{patient.Id}.json", content);
+    response.EnsureSuccessStatusCode(); // Verifica que la petición sea correcta
 
-//         // Actualizar los datos de un paciente
-//         public bool Update(Patient updatedPatient)
-//         {
-//             var existingPatient = GetById(updatedPatient.Id);
-//             if (existingPatient == null) return false;
+    var result = await response.Content.ReadAsStringAsync();
 
-//             existingPatient.Name = updatedPatient.Name;
-//             existingPatient.Age = updatedPatient.Age;
-//             existingPatient.Pets = updatedPatient.Pets;
+    using var doc = JsonDocument.Parse(result);
+    if (doc.RootElement.TryGetProperty("name", out var nameProp))
+    {
+        string id = nameProp.GetString();
+        Console.WriteLine($"✅ Paciente creado con ID: {id}");
+        return id; // Devuelve el ID generado
+    }
 
-//             return true;
-//         }
-//     }
-// }
+    return null;
+}
+
+        // READ ALL
+        public async Task<Dictionary<string, Patient>> ObtenerTodosAsync()
+        {
+            var response = await client.GetAsync($"{baseUrl}.json");
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Dictionary<string, Patient>>(json, _jsonOptions);
+        }
+
+        // READ BY ID
+        public async Task<Patient> ObtenerPorIdAsync(string id)
+        {
+            var response = await client.GetAsync($"{baseUrl}/{id}.json");
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Patient>(json, _jsonOptions);
+        }
+
+        // UPDATE
+        public async Task ActualizarAsync(string id, Patient patient)
+        {
+            var json = JsonSerializer.Serialize(patient, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await client.PutAsync($"{baseUrl}/{id}.json", content);
+        }
+
+        // DELETE
+        public async Task EliminarAsync(string id)
+        {
+            await client.DeleteAsync($"{baseUrl}/{id}.json");
+        }
+    }
+}
