@@ -81,26 +81,35 @@ namespace VeterinaryClinic.Services
         }
 
         // ✅ SHOW ONE PET (by name)
-        public static async Task ShowAsync()
+ public static async Task ShowAsync(Guid ownerId)
         {
-            string name = Validations.ValidateContent("Enter pet's name: ");
+            // 🔹 Buscar todas las mascotas que pertenezcan al dueño
+            var petsOfCustomer = DataStore.Pets
+                .Where(p => p.Value.OwnerId == ownerId)
+                .Select(p => p.Value)
+                .ToList();
 
-            var petEntry = DataStore.Pets
-                .FirstOrDefault(p =>
-                    p.Value.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            Console.Clear();
 
-            if (petEntry.Value == null)
+            if (!petsOfCustomer.Any())
             {
-                Console.WriteLine("❌ Pet not found.");
+                Console.WriteLine("❌ You don't have any registered pets.");
+                await Task.Delay(1500);
                 return;
             }
 
-            var pet = petEntry.Value;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("🐾 Your registered pets:");
+            Console.ResetColor();
 
-            Console.WriteLine($"🐶 Name   : {pet.Name}");
-            Console.WriteLine($"🐾 Species: {pet.Species}");
-            Console.WriteLine($"🏷️ Breed  : {pet.Breed}");
-            Console.WriteLine($"🎨 Color  : {pet.Color}");
+            foreach (var pet in petsOfCustomer)
+            {
+                Console.WriteLine("-------------------------------");
+                Console.WriteLine($"🐶 Name   : {pet.Name}");
+                Console.WriteLine($"🐾 Species: {pet.Species}");
+                Console.WriteLine($"🏷️ Breed  : {pet.Breed}");
+                Console.WriteLine($"🎨 Color  : {pet.Color}");
+            }
 
             Console.WriteLine("\nPress any key to return to the menu...");
             Console.ReadKey();
