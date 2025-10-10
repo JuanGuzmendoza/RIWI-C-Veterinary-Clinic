@@ -4,9 +4,9 @@ using VeterinaryClinic.Models;
 
 namespace VeterinaryClinic.Repositories
 {
-    public class PatientRepository : IRepository<Patient>   
+    public class CustomerRepository : IRepository<Customer>   
     {
-        private readonly string baseUrl = "https://crud1-ab551-default-rtdb.firebaseio.com/patients";
+        private readonly string baseUrl = "https://crud1-ab551-default-rtdb.firebaseio.com/Customers";
         private readonly HttpClient client = new HttpClient();
 
 private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -17,12 +17,12 @@ private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
     WriteIndented = false,
 };
 
-public async Task<string> CrearAsync(Patient patient)
+public async Task<string> CrearAsync(Customer Customer)
 {
-    var json = JsonSerializer.Serialize(patient, _jsonOptions);
+    var json = JsonSerializer.Serialize(Customer, _jsonOptions);
     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-    var response = await client.PutAsync($"{baseUrl}/{patient.Id}.json", content);
+    var response = await client.PutAsync($"{baseUrl}/{Customer.Id}.json", content);
     response.EnsureSuccessStatusCode(); // Verifica que la petición sea correcta
 
     var result = await response.Content.ReadAsStringAsync();
@@ -39,27 +39,27 @@ public async Task<string> CrearAsync(Patient patient)
 }
 
         // READ ALL
-        public async Task<Dictionary<string, Patient>> ObtenerTodosAsync()
+        public async Task<Dictionary<string, Customer>> ObtenerTodosAsync()
         {
             var response = await client.GetAsync($"{baseUrl}.json");
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<Dictionary<string, Patient>>(json, _jsonOptions);
+            return JsonSerializer.Deserialize<Dictionary<string, Customer>>(json, _jsonOptions);
         }
 
         // READ BY ID
-        public async Task<Patient> ObtenerPorIdAsync(string id)
+        public async Task<Customer> ObtenerPorIdAsync(string id)
         {
             var response = await client.GetAsync($"{baseUrl}/{id}.json");
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<Patient>(json, _jsonOptions);
+            return JsonSerializer.Deserialize<Customer>(json, _jsonOptions);
         }
 
         // UPDATE
-        public async Task ActualizarAsync(string id, Patient patient)
+        public async Task ActualizarAsync(string id, Customer Customer)
         {
-            var json = JsonSerializer.Serialize(patient, _jsonOptions);
+            var json = JsonSerializer.Serialize(Customer, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await client.PutAsync($"{baseUrl}/{id}.json", content);

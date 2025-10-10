@@ -8,7 +8,7 @@ namespace VeterinaryClinic.Services
     {
 
         private static readonly PetRepository _repository = new PetRepository();
-        public static List<Guid> RegisterPet(Guid patientId)
+        public static List<Guid> RegisterPet(Guid CustomerId)
         {
             List<Guid> petIds = new List<Guid>();
             bool addMore = true;
@@ -21,8 +21,8 @@ namespace VeterinaryClinic.Services
                 string color = Validations.ValidateContent("Enter pet's color: ");
 
 
-                // Create pet with OwnerId set to the patient's Id
-                Pet newPet = new Pet(name, species, breed, color, patientId);
+                // Create pet with OwnerId set to the Customer's Id
+                Pet newPet = new Pet(name, species, breed, color, CustomerId);
 
                 _repository.CrearAsync(newPet).Wait();
                 petIds.Add(newPet.Id);

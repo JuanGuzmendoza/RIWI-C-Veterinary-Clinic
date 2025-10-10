@@ -2,42 +2,46 @@
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         bool exit = false;
 
         while (!exit)
         {
             Console.Clear();
-            Console.WriteLine("---- Veterinary Clinic Menu ----");
-            Console.WriteLine("1. Register Patient");
-            Console.WriteLine("2. List Patients");
-            Console.WriteLine("3. Find Patient by Name");
-            Console.WriteLine("4. Exit");
-            Console.Write("Select an option: ");
+            Console.WriteLine("🐾 Veterinary Clinic - Customer Management");
+            Console.WriteLine("==========================================");
+            Console.WriteLine("1️⃣  Register new customer");
+            Console.WriteLine("2️⃣  List all customers");
+            Console.WriteLine("0️⃣  Exit");
+            Console.Write("\nSelect an option: ");
+
             string? option = Console.ReadLine();
 
             switch (option)
             {
                 case "1":
-                    Console.Clear();
-                    await PatientService.RegisterPatientAsync();
+                    await CustomerService.RegisterCustomerAsync();
                     break;
+
                 case "2":
-                    Console.Clear();
-                    // await PatientService.ListPatientsAsync();
+                    await CustomerService.ListCustomersAsync();
                     break;
-                case "3":
-                    Console.Clear();
-                    // await PatientService.FindPatientByNameAsync();
-                    break;
-                case "4":
+
+                case "0":
                     exit = true;
-                    Console.WriteLine("Exiting...");
+                    Console.WriteLine("👋 Goodbye!");
                     break;
+
                 default:
-                    Console.WriteLine("Invalid option. Try again.\n");
+                    Console.WriteLine("⚠️ Invalid option. Try again.");
                     break;
+            }
+
+            if (!exit)
+            {
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey();
             }
         }
     }
